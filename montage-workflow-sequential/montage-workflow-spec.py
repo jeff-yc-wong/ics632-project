@@ -339,6 +339,8 @@ def add_band(wf, band_id, center, degrees, survey, band, color):
     # for all the input images in this band, and them to the rc, and
     # add reproject tasks
     data = ascii.read('data/%s-images.tbl' %(band_id))  
+    
+    # depend = []
     for row in data:
         
         base_name = re.sub('\.fits.*', '', row['file'])
@@ -354,8 +356,13 @@ def add_band(wf, band_id, center, degrees, survey, band, color):
         j.add_inputs('region-oversized.hdr', in_fits)
         j.add_outputs(projected_fits, area_fits, stage_out=False)
         j.add_args('-X', in_fits, '-z', '0.1', projected_fits, 'region-oversized.hdr')
+        
+        # depend.append(client.submit(mProject, [inputs, outputs, args]))
         wf.add_tasks(j)
 
+    # depend is a list of futures which calls mProject
+
+    # depend2 = []
     fit_txts = []
     data = ascii.read('data/%s-diffs.tbl' %(band_id))
     for row in data:
@@ -373,6 +380,8 @@ def add_band(wf, band_id, center, degrees, survey, band, color):
         j.add_inputs(plus, plus_area, minus, minus_area, 'region-oversized.hdr')
         j.add_outputs(fit_txt, stage_out=False)
         j.add_args('-d', '-s', fit_txt, plus, minus, diff_fits, 'region-oversized.hdr')
+        # submit mDiffFit function with the prev list of mProject futures as data dependencies
+        # depend2.append(client.submit(mDiffFit, depend)
         wf.add_tasks(j)
         fit_txts.append(fit_txt)
 

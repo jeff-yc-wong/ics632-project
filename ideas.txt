@@ -1,0 +1,71 @@
+Approach 1:
+  # get a list of inital tasks that are ready to run in the sequential list of task
+  # a task is ready when all its input files exists
+  # for each task that is ready, we submit them to the DASK client, and append the futures in a list
+  ready_list = []
+  1 2 3 4 5 6 7 8 9
+  R   R   R
+ 
+  get_ready(Task):
+    Task.run()
+
+  lst = []
+  lst.append(client.submit(get_ready, task1)) # returns a future
+  client.submit(task3.run, task3) # another future
+  client.submit(get_ready, task5) # another future
+
+  # lst = [future1, future2, future3]
+
+  # once we add the tasks to the ready list, we set the tasks' output files to say ready
+  # then, we will continue to find the next set of tasks that can run after the first set
+  # and submit the list of futures from the prev set as the dependencies
+
+  ready_list = [[1, 3, 5]]
+  
+  1 2 3 4 5 6 7 8 9
+  D R D R D
+  
+  lst = []
+  client.submit(get_ready, [task2, ready_list[0]])
+
+  ready_list = [[1, 3, 5], [2, 4]]
+  
+  # repeat until all tasks are submited to the Dask client
+
+Approach 2:
+
+- make functions for each montage executables
+- submit these functions to the Dask client 
+- this would apply mostly to just the add_band function
+- create a list of futures for each section of the code that can run in parallel to pass onto 
+  the next set of task
+
+
+# https://docs.dask.org/en/stable/how-to/deploy-dask/hpc.html
+- use dask_jobqueue
+- http://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html
+
+
+
+Plans:
+- Change the Workflow run() function
+- Either have the dask client in the main function or the run function
+- wrapper function for task or maybe pass task.run as the function?
+
+- some list to keep track of output files, then update at the end of iteration (Jeff)
+
+
+- Working Hello World DASK program, check dependencies (Devin)
+- Time the sequential code, maybe 5 trials (David)
+  * make sure we show how we ran and time it
+    * OS specs
+    * CPU specs
+    * WSL
+    * amount of Ram
+- Work with one color band for now (red)
+
+
+
+
+
+
