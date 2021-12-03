@@ -2,3 +2,5 @@ montage-workflow-sequential/data/
 montage-workflow-sequential/.bash_history
 .bash_history
 test.txt
+montage-workflow-dask/data/
+montage-workflow-dask/.bash_history

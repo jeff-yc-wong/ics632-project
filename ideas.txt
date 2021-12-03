@@ -44,7 +44,7 @@ Approach 2:
 # https://docs.dask.org/en/stable/how-to/deploy-dask/hpc.html
 - use dask_jobqueue
 - http://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html
-
+- https://docs.dask.org/en/latest/how-to/deploy-dask/single-machine.html
 
 
 Plans:
