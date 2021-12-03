@@ -5,7 +5,7 @@ A GitHub repo that stores our files for ics632-project
 docker pull jeffycwong/ics632-project
 ```
 
-To access the docker image, go inside the directory with the run_it.sh files and type:
+## To access the docker image, go inside the directory with the run_it.sh files and type:
 
 Linux/MacOS:
 ```
@@ -22,9 +22,8 @@ Windows (CMD):
 docker run -it -v %cd%:/home/user jeffycwong/ics632-project
 ```
 
-----
 
-Running the run_it.sh Script:
+## Running the run_it.sh Script:
 
 Linux/MacOS:
 ```
