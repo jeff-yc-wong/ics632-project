@@ -22,7 +22,7 @@ Windows (CMD):
 docker run -it -v %cd%:/home/user jeffycwong/ics632-project
 ```
 
-
+----
 
 Running the run_it.sh Script:
 
