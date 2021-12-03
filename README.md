@@ -9,17 +9,17 @@ docker pull jeffycwong/ics632-project
 
 Linux/MacOS:
 ```
-docker run -it -v $(pwd):/home/user jeffycwong/ics632-project
+docker run -it -v $(pwd):/home/user -p 8787:8787 jeffycwong/ics632-project
 ```
 
 Windows (Powershell):
 ```
-docker run -it -v ${pwd}:/home/user jeffycwong/ics632-project
+docker run -it -v ${pwd}:/home/user -p 8787:8787 jeffycwong/ics632-project
 ```
 
 Windows (CMD):
 ```
-docker run -it -v %cd%:/home/user jeffycwong/ics632-project
+docker run -it -v %cd%:/home/user -p 8787:8787 jeffycwong/ics632-project
 ```
 
 
@@ -27,15 +27,15 @@ docker run -it -v %cd%:/home/user jeffycwong/ics632-project
 
 Linux/MacOS:
 ```
-docker run -it -v $(pwd):/home/user jeffycwong/ics632-project ./run_it.sh
+docker run -it -v $(pwd):/home/user -p 8787:8787 jeffycwong/ics632-project ./run_it.sh
 ```
 
 Windows (Powershell):
 ```
-docker run -it -v ${pwd}:/home/user jeffycwong/ics632-project ./run_it.sh
+docker run -it -v ${pwd}:/home/user -p 8787:8787 jeffycwong/ics632-project ./run_it.sh
 ```
 
 Windows (CMD):
 ```
-docker run -it -v %cd%:/home/user jeffycwong/ics632-project ./run_it.sh
+docker run -it -v %cd%:/home/user -p 8787:8787 jeffycwong/ics632-project ./run_it.sh
 ```
