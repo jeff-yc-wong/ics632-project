@@ -1,6 +1,7 @@
 # ics632-project
 A GitHub repo that stores our files for ics632-project
 
+## To pull the docker image hosted on Docker Hub
 ```
 docker pull jeffycwong/ics632-project
 ```
