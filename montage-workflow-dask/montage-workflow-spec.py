@@ -63,7 +63,7 @@ class Task:
     def run(self, *args):
         global verbose
 
-        sys.stderr.write("Current Working Directory: %s \n" % os.getcwd())
+        # sys.stderr.write("Current Working Directory: %s \n" % os.getcwd())
         sys.stderr.write("Running a " + self.executable + " task with input files {" + ', '.join(self.inputfiles) + "} " + 
         "and output files {" + ', '.join(self.outputfiles) + "}\n")
 
@@ -75,12 +75,12 @@ class Task:
         else:
             redirect = subprocess.DEVNULL
 
-        start = time.time()
+        start = time.perf_counter()
         os.chdir("/home/user/data/")
         if subprocess.call(cmd, shell=True, stderr=redirect, stdout=redirect) != 0:
             sys.stderr.write('\tCommand ' + cmd + ' failed!')
             sys.exit(1)
-        end = time.time()
+        end = time.perf_counter()
         os.chdir("/home/user")
         sys.stderr.write("  [executed in " + str("{:.2f}".format(end - start)) + " seconds]\n")
 
@@ -157,6 +157,7 @@ class Workflow:
 
         sys.stderr.write("Add task to DASK client...\n")
 
+        start = time.perf_counter()
         # Make a dictionaty of all the tasks' output files, some of which
         # serve as input to other tasks. The dictionary key is the file name,
         # and the value is true if the file has been produced already, false 
@@ -213,10 +214,8 @@ class Workflow:
                 sys.stderr.write("FATAL ERROR: No ready task found\n")
                 sys.exit(1)
 
-        sys.stderr.write("Running workflow in parallel with DASK client...\n")
-        start = time.time()
         client.gather(all_futures)
-        end = time.time()
+        end = time.perf_counter()
         sys.stderr.write("Workflow execution done in " +  str("{:.2f}".format(end - start)) + " seconds.\n")
 
 '''
