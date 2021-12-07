@@ -8,10 +8,8 @@ import sys
 import time
 
 from astropy.io import ascii
-from dask.distributed import Client, get_client
 
 verbose = False
-
 
 '''
 Task class
@@ -60,10 +58,9 @@ class Task:
     '''
     Method to run the task
     '''
-    def run(self, *args):
+    def run(self):
         global verbose
 
-        # sys.stderr.write("Current Working Directory: %s \n" % os.getcwd())
         sys.stderr.write("Running a " + self.executable + " task with input files {" + ', '.join(self.inputfiles) + "} " + 
         "and output files {" + ', '.join(self.outputfiles) + "}\n")
 
@@ -75,13 +72,13 @@ class Task:
         else:
             redirect = subprocess.DEVNULL
 
-        start = time.perf_counter()
-        os.chdir("/home/user/data/")
+        start = time.time()
+        os.chdir("./data/")
         if subprocess.call(cmd, shell=True, stderr=redirect, stdout=redirect) != 0:
             sys.stderr.write('\tCommand ' + cmd + ' failed!')
             sys.exit(1)
-        end = time.perf_counter()
-        os.chdir("/home/user")
+        end = time.time()
+        os.chdir("../")
         sys.stderr.write("  [executed in " + str("{:.2f}".format(end - start)) + " seconds]\n")
 
 
@@ -155,9 +152,9 @@ class Workflow:
     '''
     def run(self):
 
-        sys.stderr.write("Add task to DASK client...\n")
+        start = time.time()
+        sys.stderr.write("Running the workflow sequentially...\n")
 
-        start = time.perf_counter()
         # Make a dictionaty of all the tasks' output files, some of which
         # serve as input to other tasks. The dictionary key is the file name,
         # and the value is true if the file has been produced already, false 
@@ -168,15 +165,11 @@ class Workflow:
             for f in task.outputfiles:
                 all_output_files[f] = False
     
-        ready_list = []
-        client = get_client()
-        all_futures = []
-
         # Loop until tasks remain (yes, this loop "destroys" the workflow)
         while len(self.tasks) > 0:
 
-            # Find list of tasks that are ready
-            ready_tasks = []
+            # Pick a ready task
+            ready_task = None
             for task in self.tasks:
                 ready = True
                 # Check if all the task's inputfiles are available
@@ -188,35 +181,25 @@ class Workflow:
                             ready = False
                 # If the task was ready, we're done
                 if ready:
-                    ready_tasks.append(task)
-            
-            ready_futures = []
+                    ready_task = task
+                break
+
             # If we found a ready task, we run it
-            if len(ready_tasks) != 0:
-                for task in ready_tasks:
-                    if len(ready_list) == 0:
-                        x = client.submit(task.run)
-                        ready_futures.append(x)
-                        all_futures.append(x)
-                    else:
-                        x = client.submit(task.run, ready_list[len(ready_list)-1])
-                        ready_futures.append(x)
-                        all_futures.append(x)
-                    
-                    # Mark its output files as produced
-                    for f in task.outputfiles:
-                        all_output_files[f] = True
-                    
-                    self.tasks.remove(task)
-                ready_list.append(ready_futures)
+            if ready_task != None:
+                # Run the task
+                ready_task.run()
+                # Mark its output files as produced
+                for f in ready_task.outputfiles:
+                    all_output_files[f] = True
+
+                self.tasks.remove(ready_task)
             else:
                 # This should never happen
                 sys.stderr.write("FATAL ERROR: No ready task found\n")
                 sys.exit(1)
 
-        client.gather(all_futures)
-        end = time.perf_counter()
-        sys.stderr.write("Workflow execution done in " +  str("{:.2f}".format(end - start)) + " seconds.\n")
+        end = time.time()
+        sys.stderr.write("Workflow execution done in " +  str("{:.2f}".format(end - start)) + " seconds.")
 
 '''
 The functions below are written by scientists to generate
@@ -357,6 +340,7 @@ def add_band(wf, band_id, center, degrees, survey, band, color):
     # add reproject tasks
     data = ascii.read('data/%s-images.tbl' %(band_id))  
     
+    # depend = []
     for row in data:
         
         base_name = re.sub('\.fits.*', '', row['file'])
@@ -373,8 +357,12 @@ def add_band(wf, band_id, center, degrees, survey, band, color):
         j.add_outputs(projected_fits, area_fits, stage_out=False)
         j.add_args('-X', in_fits, '-z', '0.1', projected_fits, 'region-oversized.hdr')
         
+        # depend.append(client.submit(mProject, [inputs, outputs, args]))
         wf.add_tasks(j)
 
+    # depend is a list of futures which calls mProject
+
+    # depend2 = []
     fit_txts = []
     data = ascii.read('data/%s-diffs.tbl' %(band_id))
     for row in data:
@@ -392,6 +380,8 @@ def add_band(wf, band_id, center, degrees, survey, band, color):
         j.add_inputs(plus, plus_area, minus, minus_area, 'region-oversized.hdr')
         j.add_outputs(fit_txt, stage_out=False)
         j.add_args('-d', '-s', fit_txt, plus, minus, diff_fits, 'region-oversized.hdr')
+        # submit mDiffFit function with the prev list of mProject futures as data dependencies
+        # depend2.append(client.submit(mDiffFit, depend)
         wf.add_tasks(j)
         fit_txts.append(fit_txt)
 
@@ -539,9 +529,6 @@ if __name__ == '__main__':
 
     # Clean up data directory of the .tbl and .hdr files, if any
     os.system("rm -f ./data/*.tbl ./data/*.hdr")
-
-    # creating DASK client
-    client = Client()
 
     # Generate the workflow object
     wf = generate_workflow(args.center, args.degrees, args.bands)
