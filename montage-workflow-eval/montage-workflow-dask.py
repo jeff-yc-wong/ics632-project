@@ -63,7 +63,6 @@ class Task:
     def run(self, *args):
         global verbose
 
-        # sys.stderr.write("Current Working Directory: %s \n" % os.getcwd())
         sys.stderr.write("Running a " + self.executable + " task with input files {" + ', '.join(self.inputfiles) + "} " + 
         "and output files {" + ', '.join(self.outputfiles) + "}\n")
 
@@ -76,14 +75,21 @@ class Task:
             redirect = subprocess.DEVNULL
 
         start = time.perf_counter()
+        sys.stderr.write("Current Working Directory: %s \n" % os.getcwd())
         if (os.path.basename(os.getcwd()) != "data"):
+            base_path = os.getcwd()
             os.chdir("./data")
+            sys.stderr.write("Changed Directory: %s \b" % os.getcwd())
+        else:
+            base_path = os.path.dirname(os.getcwd())
+
         if subprocess.call(cmd, shell=True, stderr=redirect, stdout=redirect) != 0:
             sys.stderr.write('\tCommand ' + cmd + ' failed!')
             sys.exit(1)
         end = time.perf_counter()
-
-        os.chdir("../")
+        
+        sys.stderr.write("Current Working Directory: %s \n" % os.getcwd())
+        os.chdir(base_path)
         sys.stderr.write("  [executed in " + str("{:.2f}".format(end - start)) + " seconds]\n")
 
 
