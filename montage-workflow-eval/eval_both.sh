@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-echo Sequential >> output.txt
+echo Sequential > output.txt
 echo Sequential
 for i in {1..5}
 do

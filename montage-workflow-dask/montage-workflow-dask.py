@@ -76,14 +76,15 @@ class Task:
             redirect = subprocess.DEVNULL
 
         start = time.perf_counter()
-        os.chdir("/home/user/data/")
+        if (os.path.basename(os.getcwd()) != "data"):
+            os.chdir("./data")
         if subprocess.call(cmd, shell=True, stderr=redirect, stdout=redirect) != 0:
             sys.stderr.write('\tCommand ' + cmd + ' failed!')
             sys.exit(1)
         end = time.perf_counter()
-        os.chdir("/home/user")
-        sys.stderr.write("  [executed in " + str("{:.2f}".format(end - start)) + " seconds]\n")
 
+        os.chdir("../")
+        sys.stderr.write("  [executed in " + str("{:.2f}".format(end - start)) + " seconds]\n")
 
 
 '''
@@ -217,6 +218,9 @@ class Workflow:
         client.gather(all_futures)
         end = time.perf_counter()
         sys.stderr.write("Workflow execution done in " +  str("{:.2f}".format(end - start)) + " seconds.\n")
+
+        with open("dask.txt", "a") as output:
+            output.write("Workflow execution done in " +  str("{:.2f}".format(end - start)) + " seconds.\n")
 
 '''
 The functions below are written by scientists to generate

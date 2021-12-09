@@ -1,13 +1,14 @@
 montage-workflow-sequential/data/
 montage-workflow-sequential/.bash_history
-.bash_history
-test.txt
+montage-workflow-sequential/seq.txt
 
 montage-workflow-dask/.bash_history
 montage-workflow-dask/data/
-montage-workflow-dask/output.txt
+montage-workflow-dask/dask.txt
 montage-workflow-dask/dask-worker-space/
 
+montage-workflow-eval/.bash_history
 montage-workflow-eval/dask-worker-space/
 montage-workflow-eval/data/
-montage-workflow-eval/output.txt
+montage-workflow-eval/dask.txt
+montage-workflow-eval/seq.txt
