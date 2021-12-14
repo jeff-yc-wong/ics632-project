@@ -1,5 +1,5 @@
-# ics632-project
-A GitHub repo that stores our files for ics632-project
+# Parallelizing Astronomical Mosaic Workflow with DASK
+A GitHub repo that stores our code for the ICS632 final project, Parallelizing Astronomical Mosaic Workflow with DASK.
 
 ## To pull the docker image hosted on Docker Hub
 ```
