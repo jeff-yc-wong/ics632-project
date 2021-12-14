@@ -6,7 +6,7 @@ A GitHub repo that stores our code for the ICS632 final project, Parallelizing A
 docker pull jeffycwong/ics632-project
 ```
 
-## To access the docker image, go inside the directory with the run_it.sh files and type:
+## To run the docker image in shell mode, go inside the directory with the run_it.sh files and type:
 
 Linux/MacOS:
 ```
